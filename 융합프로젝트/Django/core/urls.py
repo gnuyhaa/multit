@@ -22,5 +22,7 @@ urlpatterns = [
     path('', include('account.urls')),
     path('frige/', include('frige.urls')),
     path("recommend/", include('recommend.urls')),
+    path("community/", include('community.urls')),
+    # path('report/', include('report.urls')),
 ]
 

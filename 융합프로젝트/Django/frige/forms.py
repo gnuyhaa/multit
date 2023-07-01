@@ -5,4 +5,3 @@ class FrigeForm(forms.ModelForm):
     class Meta:
         model = Frige
         fields = ['name']
-        

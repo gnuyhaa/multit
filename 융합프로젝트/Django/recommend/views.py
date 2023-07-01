@@ -1,36 +1,44 @@
-from django.shortcuts import render
-import pymysql
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
+from recommend.alco_re import *
+from recommend.rec import *
+import numpy as np
+import pandas as pd 
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.feature_extraction.text import CountVectorizer
+from scipy.spatial import distance_matrix
+from scipy.spatial.distance import squareform
+from sklearn.preprocessing import MinMaxScaler
+from string import punctuation
+import csv
+import re
 import json
-
 # Create your views here.
 
-def index(request):
-    # 데이터베이스 연결
-    conn = pymysql.connect(host="team4rds.cpa0spimmjj8.us-east-2.rds.amazonaws.com", port=3306, user='admin', passwd='team4123', db='bigdata_location', charset='utf8')
-    cur = conn.cursor()
-    #쿼리 실행
-    query = "SELECT * FROM alcohol_data"
-    cur.execute(query)
-    rows = cur.fetchall()
+def index(request) :    
+    result = recom('서울의 밤')
+    data = pd.read_csv('wth.csv')
+    context = {"result" : result, "data":data }
+    return render(request, 'recc/search_rec.html', context)
 
-    #결과 처리
-    main_line_lbl = []
-    main_line_val = []
-    for row in rows:
-        main_line_lbl.append(row[2])
-        main_line_val.append(row[1])
+def weather(request):
+    user_location = request.GET.get("city")
+    print(user_location)
+    if user_location is not None:
+        sky_description, pty, t1h = get_loc(user_location)
+        recommendation, temp_drink, pty_drink = recom_weather(t1h, pty)
+
         
-    # 결과를 JSON 형식으로 변환
-    contx_dic = {
-        'main_line_lbl': main_line_lbl,
-        'main_line_val': main_line_val,
-    }
-    result = json.dumps(contx_dic, ensure_ascii=False)
-    print(result)
-    context = {'result': result}
+        context = {
+        "city": user_location,
+        "weather":[sky_description, pty, t1h],
+        "recc":[temp_drink, pty_drink],
+        }
+        
+        return render(request, "recc/weather_rec.html", context)
+    else:
+        return render(request, "recc/weather_rec.html")
 
-    #연결 및 커서 닫기
-    cur.close()
-    conn.close()
 
-    return render(request, 'recc/reccomend.html', {'rows':rows})
+
+
