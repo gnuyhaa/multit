@@ -16,7 +16,7 @@ import json
 # Create your views here.
 
 def index(request) :    
-    alco_search = request.GET.get("alco")
+    alco_search = request.GET.get("alco", '')
     if alco_search is not None:
         result = recom(alco_search)
         context = {"result" : result}

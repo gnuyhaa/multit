@@ -330,6 +330,9 @@ def recom(test_num):
     wine_new_sim,wine_idx = wine_sim(alc)
     kor_new_sim,kor_idx =kor_sim(alc)
 
+    if not test_num :  # 검색어가 비어있는 경우 빈 리스트 반환
+        return {"general": [], "alc_cate": []}
+    
     ge_re = general_recommendation(test_num, new_sim) # 주류명을 넣으면 주류상관없이 비슷한 술 top10 추천  
 
     if is_wine(test_num) == True:
