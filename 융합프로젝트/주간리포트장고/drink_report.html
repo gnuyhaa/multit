@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{%load static%}
+
+{% block content %}
+  {% if report == "" %}
+  <center>
+    <img src= "{%static 'image.png'%}"/>
+  </center>
+  {% else %}
+  <div>{{report}}</div>
+  {% endif %}
+{% endblock %}
